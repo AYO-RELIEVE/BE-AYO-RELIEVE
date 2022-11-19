@@ -1,7 +1,9 @@
-const { User } = require('../models');
+require('dotenv').config()
+const { User, RefreshToken } = require('../models');
 const Validator = require('fastest-validator');
 const v = new Validator();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const register = async (req, res) => {
     const schema = {
@@ -59,18 +61,41 @@ const login = async (req, res) => {
         });
     }
 
-    const match = await bcrypt.compare(req.body.password, user.password);
+    const isValidPassword = await bcrypt.compare(req.body.password, user.password);
 
-    if (!match) {
+    if (!isValidPassword) {
         return res.status(400).json({
             message: "Credentials doesn't match"
         });
     }
 
+    delete user.dataValues.password;
+
+    const token = jwt.sign({ user }, process.env.JWT_SECRET_ACCESS_TOKEN, { expiresIn: process.env.JWT_EXPIRED_ACCESS_TOKEN });
+
+    const refreshToken = jwt.sign({ user }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: process.env.JWT_EXPIRED_REFRESH_TOKEN });
+
+    await RefreshToken.create({
+        token: refreshToken,
+        user_id: user.id
+    });
+
     res.status(200).json({
         message: 'Login Success',
+        data: { token, refreshToken }
+    })
+}
+
+const loggedUser = async (req, res) => {
+    const user = await User.findByPk(req.user.id, {
+        attributes: {
+            exclude: ['password']
+        }
+    });
+
+    res.status(200).json({
         data: user
     })
 }
 
-module.exports = { register, login };
+module.exports = { register, login, loggedUser };
