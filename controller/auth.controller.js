@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { User, RefreshToken, UserOrganizationDetail } = require('../models');
+const { User, RefreshToken, UserOrganizationDetail, UserApplicantDetail } = require('../models');
 const Validator = require('fastest-validator');
 const v = new Validator();
 const bcrypt = require('bcrypt');
@@ -15,6 +15,18 @@ const register = async (req, res) => {
         address: 'string|empty:false|min:3|max:50',
         phone_number: 'string|empty:false|min:9|max:15',
         status: { type: 'enum', required: true, values: ["organization", "applicant"] },
+    }
+
+    if (status === 'applicant') {
+        schema.date_of_birth = 'string|empty:false'
+        schema.religion = 'string|empty:false'
+        schema.married = 'boolean|empty:false'
+        schema.identity_card = 'string|optional:true'
+        schema.profession = 'string|empty:false'
+        schema.disability = 'boolean|empty:false'
+        schema.lsm = 'boolean|empty:false'
+        schema.lsm_name = 'string|optional:true'
+        schema.lsm_membership = 'string|optional:true'
     }
 
     if (status === 'organization') {
@@ -53,12 +65,32 @@ const register = async (req, res) => {
         photo
     });
 
+    if (status === 'applicant') {
+        const { date_of_birth, religion, married, identity_card, profession, disability, proof_of_disability, lsm, lsm_name, lsm_membership } = req.body
+
+        const userApplicantDetail = await UserApplicantDetail.create({
+            user_id: user.id,
+            date_of_birth,
+            religion,
+            married,
+            identity_card,
+            profession,
+            disability,
+            proof_of_disability,
+            lsm,
+            lsm_name,
+            lsm_membership,
+        });
+    }
+
     if (status === 'organization') {
+        const { description, sector, media_social } = req.body
+
         const userOrganizationDetail = await UserOrganizationDetail.create({
             user_id: user.id,
-            description: req.body.description,
-            sector: req.body.sector,
-            media_social: req.body.media_social
+            description,
+            sector,
+            media_social
         });
     }
 

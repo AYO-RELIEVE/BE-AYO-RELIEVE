@@ -10,6 +10,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         as: 'user_organization_detail',
       });
+
+      User.hasOne(models.UserApplicantDetail, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+        as: 'user_applicant_detail',
+      });
     }
   }
   User.init({
