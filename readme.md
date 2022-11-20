@@ -26,6 +26,7 @@
 
 
 ## ERD
+![erd](https://user-images.githubusercontent.com/49114801/202921921-87a72ea7-57a3-4ebd-92cd-72cab36f502c.jpg)
 
 
 ## API Documentation
