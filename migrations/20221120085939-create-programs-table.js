@@ -1,43 +1,46 @@
 "use strict";
-// const { Sequelize } = require("../models");
-
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("programs", {
+    await queryInterface.createTable("Programs", {
       id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      category_id: {
+        type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING,
         allowNull: false,
+        type: Sequelize.STRING,
       },
       description: {
+        allowNull: false,
         type: Sequelize.TEXT,
       },
-      roles: {
-        type: Sequelize.STRING,
+      rules: {
         allowNull: false,
+        type: Sequelize.STRING,
       },
       thumbnail: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.STRING
       },
       qouta: {
-        type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
       },
       end_date: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
         allowNull: false,
+        type: Sequelize.DATEONLY,
+        defaultValue: Sequelize.NOW,
       },
-      announcement: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
+      announcement_date: {
         allowNull: false,
+        type: Sequelize.DATEONLY,
+        defaultValue: Sequelize.NOW,
       },
       createdAt: {
         allowNull: false,
@@ -48,9 +51,19 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
-  },
 
+    await queryInterface.addConstraint("Programs", {
+      fields: ['category_id'],
+      type: 'foreign key',
+      name: 'programs_fkey_category_id',
+      references: {
+        table: 'Categories',
+        field: 'id'
+      },
+      onDelete: 'cascade',
+    });
+  },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("programs");
+    await queryInterface.dropTable("Programs");
   },
 };

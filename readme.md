@@ -24,11 +24,16 @@
 - Update category
 - Delete category
 
+
+## ERD
+![erd](https://user-images.githubusercontent.com/49114801/202921921-87a72ea7-57a3-4ebd-92cd-72cab36f502c.jpg)
+
+
 ## API Documentation
 Postman: https://documenter.getpostman.com/view/21482811/2s8YmSrfq6
 
 ## Specs API
-Root URL: https://todos.osorateam.com
+Root URL: https://ayo-relieve.osorateam.com/api
 
 ### Register
 Request :
