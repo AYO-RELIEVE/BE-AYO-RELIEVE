@@ -25,8 +25,10 @@
 - Delete category
 
 ## API Documentation
-Root URL: https://todos.osorateam.com
+Postman: https://documenter.getpostman.com/view/21482811/2s8YmSrfq6
 
+## Specs API
+Root URL: https://todos.osorateam.com
 
 ### Register
 Request :
