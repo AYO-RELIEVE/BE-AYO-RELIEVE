@@ -16,6 +16,19 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         as: 'user_applicant_detail',
       });
+
+      User.hasMany(models.Program, {
+        foreignKey: 'organization_id',
+        onDelete: 'CASCADE',
+        as: 'programs',
+      });
+
+      User.belongsToMany(models.Program, {
+        through: 'Program_Users',
+        as: 'program_users',
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+      });
     }
   }
   User.init({

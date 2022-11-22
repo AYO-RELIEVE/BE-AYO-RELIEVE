@@ -142,4 +142,29 @@ const destroy = async (req, res) => {
     });
 }
 
-module.exports = { index, show, create, update, destroy };
+const apply = async (req, res) => {
+    const { id } = req.params;
+    const program = await Program.findByPk(id);
+
+    if (!program) {
+        return res.status(404).json({
+            message: "Program not found",
+        });
+    }
+
+    const userApplied = await program.hasProgram_users(req.user.id);
+
+    if (userApplied) {
+        return res.status(400).json({
+            message: "You have already applied for this program"
+        });
+    }
+
+    await program.addProgram_users(req.user.id);
+
+    res.json({
+        message: "You have successfully applied for this program"
+    });
+}
+
+module.exports = { index, show, create, update, destroy, apply };

@@ -9,6 +9,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'category_id',
         as: 'category',
       });
+
+      Program.belongsTo(models.User, {
+        foreignKey: 'organization_id',
+        as: 'organization',
+      });
+
+      Program.belongsToMany(models.User, {
+        through: 'Program_Users',
+        as: 'program_users',
+        foreignKey: 'program_id',
+        onDelete: 'CASCADE',
+      });
     }
   }
   Program.init({
