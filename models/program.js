@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Program.init({
+    organization_id: DataTypes.INTEGER,
     category_id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
