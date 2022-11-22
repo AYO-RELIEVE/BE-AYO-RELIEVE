@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      organization_id: {
+        type: Sequelize.INTEGER
+      },
       category_id: {
         type: Sequelize.INTEGER
       },
@@ -50,6 +53,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+    });
+
+    await queryInterface.addConstraint("Programs", {
+      fields: ["organization_id"],
+      type: "foreign key",
+      name: "programs_fkey_organization_id",
+      references: {
+        table: "Users",
+        field: "id",
+      },
+      onDelete: "cascade",
     });
 
     await queryInterface.addConstraint("Programs", {

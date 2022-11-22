@@ -1,6 +1,6 @@
 const Validator = require('fastest-validator');
 const v = new Validator();
-const { Program } = require("../models");
+const { Program, Category, ProgramUser } = require("../models");
 
 const index = async (req, res) => {
     const programs = await Program.findAll({
@@ -52,7 +52,18 @@ const create = async (req, res) => {
         });
     }
 
-    const program = await Program.create(req.body);
+    const category = await Category.findByPk(req.body.category_id);
+
+    if (!category) {
+        return res.status(404).json({
+            message: "Category not found"
+        });
+    }
+
+    const program = await Program.create({
+        organization_id: req.user.id,
+        ...req.body,
+    });
 
     return res.status(201).json({
         data: program
@@ -60,6 +71,9 @@ const create = async (req, res) => {
 }
 
 const update = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, rules, thumbnail, qouta, end_date, announcement_date } = req.body
+
     const schema = {
         title: "string|empty:false|min:3|max:50",
         description: "string|optional",
@@ -76,14 +90,17 @@ const update = async (req, res) => {
         return res.status(400).json(validate);
     }
 
-    const { id } = req.params;
-    const { title, description, rules, thumbnail, qouta, end_date, announcement_date } = req.body
-
     const program = await Program.findByPk(id);
 
     if (!program) {
         return res.status(404).json({
             message: "Program not found",
+        });
+    }
+
+    if (req.user.id != program.organization_id) {
+        return res.status(403).json({
+            message: "You are not authorized to update this program"
         });
     }
 
@@ -98,17 +115,23 @@ const update = async (req, res) => {
     await program.save();
 
     res.json({
-        message: "Program updated",
+        data: program
     });
 }
 
 const destroy = async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const program = await Program.findByPk(id);
 
     if (!program) {
         return res.status(404).json({
             message: "Program not found",
+        });
+    }
+
+    if (req.user.id != program.organization_id) {
+        return res.status(403).json({
+            message: "You are not authorized to update this program"
         });
     }
 
@@ -119,4 +142,107 @@ const destroy = async (req, res) => {
     });
 }
 
-module.exports = { index, show, create, update, destroy };
+const apply = async (req, res) => {
+    const { id } = req.params;
+    const program = await Program.findByPk(id);
+
+    if (!program) {
+        return res.status(404).json({
+            message: "Program not found",
+        });
+    }
+
+    const userApplied = await program.hasProgram_users(req.user.id);
+
+    if (userApplied) {
+        return res.status(400).json({
+            message: "You have already applied for this program"
+        });
+    }
+
+    await program.addProgram_users(req.user.id);
+
+    res.json({
+        message: "You have successfully applied for this program"
+    });
+}
+
+const approve = async (req, res) => {
+    const { id, user_id } = req.params;
+    const program = await Program.findByPk(id);
+
+    if (!program) {
+        return res.status(404).json({
+            message: "Program not found",
+        });
+    }
+
+    if (req.user.id != program.organization_id) {
+        return res.status(403).json({
+            message: "You are not authorized to update this program"
+        });
+    }
+
+    const userApplied = await program.hasProgram_users(parseInt(user_id));
+
+    if (!userApplied) {
+        return res.status(400).json({
+            message: "User has not applied for this program"
+        });
+    }
+
+    const programUsers = await ProgramUser.findOne({
+        where: {
+            program_id: id,
+            user_id: user_id,
+        }
+    });
+
+    programUsers.status = "Diterima";
+    await programUsers.save();
+
+    res.json({
+        message: "User has been approved for this program"
+    });
+}
+
+const reject = async (req, res) => {
+    const { id, user_id } = req.params;
+    const program = await Program.findByPk(id);
+
+    if (!program) {
+        return res.status(404).json({
+            message: "Program not found",
+        });
+    }
+
+    if (req.user.id != program.organization_id) {
+        return res.status(403).json({
+            message: "You are not authorized to update this program"
+        });
+    }
+
+    const userApplied = await program.hasProgram_users(parseInt(user_id));
+
+    if (!userApplied) {
+        return res.status(400).json({
+            message: "User has not applied for this program"
+        });
+    }
+
+    const programUsers = await ProgramUser.findOne({
+        where: {
+            program_id: id,
+            user_id: user_id,
+        }
+    });
+
+    programUsers.status = "Ditolak";
+    await programUsers.save();
+
+    res.json({
+        message: "User has been rejected for this program"
+    });
+}
+
+module.exports = { index, show, create, update, destroy, apply, approve, reject };

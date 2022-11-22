@@ -33,7 +33,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM('organization', 'applicant'),
+        type: Sequelize.ENUM('admin', 'organization', 'applicant'),
         defaultValue: 'applicant'
       },
       createdAt: {
