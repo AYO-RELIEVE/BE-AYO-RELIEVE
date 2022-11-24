@@ -16,17 +16,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATEONLY
       },
-      religion: {
+      gender: {
         allowNull: false,
-        type: Sequelize.STRING
-      },
-      married: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN
-      },
-      identity_card: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.ENUM('Pria', 'Perempuan'),
       },
       profession: {
         allowNull: false,
@@ -35,19 +27,6 @@ module.exports = {
       disability: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
-      },
-      proof_of_disability: {
-        type: Sequelize.STRING
-      },
-      lsm: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      lsm_name: {
-        type: Sequelize.STRING
-      },
-      lsm_membership: {
-        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

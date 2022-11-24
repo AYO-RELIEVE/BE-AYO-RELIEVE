@@ -54,15 +54,9 @@ Request :
     "phone_number": "089347294823",
     "status": "applicant",
     "date_of_birth": "2022-11-25",
-    "religion": "Islam",
-    "married": boolean,
-    "identity_card": "path to identity image",
+    "gender": "enum ('Pria', 'Perempuan')",
     "profession": "Programmer",
     "disability": boolean,
-    "proof_of_disability": "path to proof_of_disability image",
-    "lsm": boolean,
-    "lsm_name": "string",
-    "lsm_membership": "path to lsm membership image"
 }
 ```
 
@@ -94,15 +88,9 @@ Response :
         "phone_number": "089347294823",
         "status": "applicant",
         "date_of_birth": "2022-11-25",
-        "religion": "Islam",
-        "married": boolean,
-        "identity_card": "path to identity image",
+        "gender": "enum ('Pria', 'Perempuan')",
         "profession": "Programmer",
-        "disability": boolean,
-        "proof_of_disability": "path to proof_of_disability image",
-        "lsm": boolean,
-        "lsm_name": "string",
-        "lsm_membership": "path to lsm membership image"
+        "disability": boolean
     }
 }
 ```
@@ -200,7 +188,6 @@ Response :
 ```json 
 {
     "data" : {
-        "category_id" : "integer",
         "title" : "string",
         "description" : "text",
         "rules" : "string",
@@ -219,12 +206,11 @@ Request :
 - Header :
     - Content-Type: application/json
     - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization user)
+    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization only)
 
 - Body :
 ```json 
 {
-    "category_id" : "integer",
     "title" : "string",
     "description" : "text",
     "rules" : "string",
@@ -259,12 +245,11 @@ Request :
 - Header :
     - Content-Type: application/json
     - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization user)
+    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization only)
 
 - Body :
 ```json 
 {
-    "category_id" : "integer",
     "title" : "string",
     "description" : "text",
     "rules" : "string",
@@ -280,7 +265,6 @@ Response :
 ```json 
 {
     "data" : {
-        "category_id" : "integer",
         "title" : "string",
         "description" : "text",
         "rules" : "string",
@@ -298,124 +282,12 @@ Request :
 - Endpoint : `/programs/:id`
 - Header :
     - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization user)
+    - Authorization: "Bearer <JWT ACCESS TOKEN>" (organization only)
 
 Response :
 
 ```json 
 {
     "message" : "Program successfully deleted"
-}
-```
-
-### Get all categories
-Request :
-- Method : GET
-- Endpoint : `/categories`
-- Header :
-    - Accept: application/json
-
-Response :
-
-```json 
-{
-    "data" : [
-        {
-            "id" : "integer",
-            "name" : "string"
-        },
-        {
-            "id" : "integer",
-            "name" : "string"
-        }
-     ]
-}
-```
-
-### Get one category
-Request :
-- Method : GET
-- Endpoint : `/categories/:id`
-- Header :
-    - Accept: application/json
-
-Response :
-
-```json 
-{
-    "data" : {
-        "id" : "integer",
-        "name" : "string"
-    }
-}
-```
-
-### Create category
-Request :
-- Method : POST
-- Endpoint : `/programs`
-- Header :
-    - Content-Type: application/json
-    - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (admin user)
-
-- Body :
-```json 
-{
-    "name" : "string"
-}
-```
-
-Response :
-
-```json 
-{
-    "data" : {
-        "id" : "integer",
-        "name" : "string"
-    }
-}
-```
-
-### Update category
-Request :
-- Method : PUT
-- Endpoint : `/programs/:id`
-- Header :
-    - Content-Type: application/json
-    - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (admin user)
-
-- Body :
-```json 
-{
-    "name" : "string"
-}
-```
-
-Response :
-
-```json 
-{
-    "data" : {
-        "id" : "integer",
-        "name" : "string"
-    }
-}
-```
-
-### Delete category
-Request :
-- Method : DELETE
-- Endpoint : `/programs/:id`
-- Header :
-    - Accept: application/json
-    - Authorization: "Bearer <JWT ACCESS TOKEN>" (admin user)
-
-Response :
-
-```json 
-{
-    "message" : "Category successfully deleted"
 }
 ```

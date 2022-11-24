@@ -1,13 +1,9 @@
 const Validator = require('fastest-validator');
 const v = new Validator();
-const { Program, Category, ProgramUser } = require("../models");
+const { Program, ProgramUser } = require("../models");
 
 const index = async (req, res) => {
-    const programs = await Program.findAll({
-        include: {
-            association: "category",
-        },
-    });
+    const programs = await Program.findAll({});
 
     return res.status(200).json({
         data: programs
@@ -16,11 +12,7 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
     const { id } = req.params;
-    const program = await Program.findByPk(id, {
-        include: {
-            association: "category",
-        },
-    });
+    const program = await Program.findByPk(id);
 
     if (!program) {
         return res.status(404).json({
@@ -49,14 +41,6 @@ const create = async (req, res) => {
     if (validate.length) {
         return res.status(400).json({
             message: validate
-        });
-    }
-
-    const category = await Category.findByPk(req.body.category_id);
-
-    if (!category) {
-        return res.status(404).json({
-            message: "Category not found"
         });
     }
 

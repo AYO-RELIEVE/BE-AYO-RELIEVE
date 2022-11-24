@@ -19,14 +19,9 @@ const register = async (req, res) => {
 
     if (status === 'applicant') {
         schema.date_of_birth = 'string|empty:false'
-        schema.religion = 'string|empty:false'
-        schema.married = 'boolean|empty:false'
-        schema.identity_card = 'string|optional:true'
+        schema.gender = { type: 'enum', required: true, values: ['Pria', 'Perempuan'] },
         schema.profession = 'string|empty:false'
         schema.disability = 'boolean|empty:false'
-        schema.lsm = 'boolean|empty:false'
-        schema.lsm_name = 'string|optional:true'
-        schema.lsm_membership = 'string|optional:true'
     }
 
     if (status === 'organization') {
@@ -66,20 +61,14 @@ const register = async (req, res) => {
     });
 
     if (status === 'applicant') {
-        const { date_of_birth, religion, married, identity_card, profession, disability, proof_of_disability, lsm, lsm_name, lsm_membership } = req.body
+        const { date_of_birth, married, profession, disability } = req.body
 
         const userApplicantDetail = await UserApplicantDetail.create({
             user_id: user.id,
             date_of_birth,
-            religion,
             married,
-            identity_card,
             profession,
             disability,
-            proof_of_disability,
-            lsm,
-            lsm_name,
-            lsm_membership,
         });
     }
 
