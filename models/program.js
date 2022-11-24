@@ -5,11 +5,6 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Program extends Model {
     static associate(models) {
-      Program.belongsTo(models.Category, {
-        foreignKey: 'category_id',
-        as: 'category',
-      });
-
       Program.belongsTo(models.User, {
         foreignKey: 'organization_id',
         as: 'organization',
