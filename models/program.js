@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Program.belongsToMany(models.User, {
         through: 'Program_Users',
-        as: 'program_users',
+        as: 'applicant',
         foreignKey: 'program_id',
         onDelete: 'CASCADE',
       });
