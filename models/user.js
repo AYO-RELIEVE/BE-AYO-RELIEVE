@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 
       User.belongsToMany(models.Program, {
         through: 'Program_Users',
-        as: 'program_users',
+        as: 'program_programs',
         foreignKey: 'user_id',
         onDelete: 'CASCADE',
       });
