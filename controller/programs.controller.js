@@ -136,7 +136,7 @@ const apply = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(req.user.id);
+    const userApplied = await program.hasApplicant(req.user.id);
 
     if (userApplied) {
         return res.status(400).json({
@@ -144,7 +144,7 @@ const apply = async (req, res) => {
         });
     }
 
-    await program.addProgram_users(req.user.id);
+    await program.addApplicant(req.user.id);
 
     res.json({
         message: "You have successfully applied for this program"
@@ -167,7 +167,7 @@ const approve = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(parseInt(user_id));
+    const userApplied = await program.hasApplicant(parseInt(user_id));
 
     if (!userApplied) {
         return res.status(400).json({
@@ -206,7 +206,7 @@ const reject = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(parseInt(user_id));
+    const userApplied = await program.hasApplicant(parseInt(user_id));
 
     if (!userApplied) {
         return res.status(400).json({

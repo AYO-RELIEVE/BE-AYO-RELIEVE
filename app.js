@@ -6,6 +6,7 @@ const cors = require('cors')
 
 const authRouter = require('./routes/auth');
 const programsRouter = require('./routes/programs');
+const organizationsRouter = require('./routes/organizations');
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.use(cors({
 
 app.use('/api/auth', authRouter);
 app.use('/api/programs', programsRouter);
+app.use('/api/organizations', organizationsRouter);
 
 module.exports = app;
