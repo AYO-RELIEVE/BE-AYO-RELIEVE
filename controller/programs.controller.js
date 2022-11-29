@@ -1,6 +1,6 @@
 const Validator = require('fastest-validator');
 const v = new Validator();
-const { Program, ProgramUser } = require("../models");
+const { Program, ProgramUser, User } = require("../models");
 
 const index = async (req, res) => {
     const programs = await Program.findAll({});
@@ -229,4 +229,20 @@ const reject = async (req, res) => {
     });
 }
 
-module.exports = { index, show, create, update, destroy, apply, approve, reject };
+const myPrograms = async (req, res) => {
+    const userPrograms = await User.findByPk(req.user.id, {
+        include: [{
+            model: Program,
+            as: "program_programs",
+            through: {
+                attributes: ["status"]
+            }
+        }]
+    });
+    
+    return res.status(200).json({
+        data: userPrograms.program_programs
+    });
+}
+
+module.exports = { index, show, create, update, destroy, apply, approve, reject, myPrograms };
