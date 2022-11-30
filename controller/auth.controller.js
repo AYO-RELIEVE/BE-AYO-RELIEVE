@@ -20,7 +20,7 @@ const register = async (req, res) => {
     if (status === 'applicant') {
         schema.date_of_birth = 'string|empty:false'
         schema.gender = { type: 'enum', required: true, values: ['Pria', 'Perempuan'] },
-        schema.profession = 'string|empty:false'
+            schema.profession = 'string|empty:false'
         schema.disability = 'boolean|empty:false'
     }
 
@@ -143,8 +143,30 @@ const loggedUser = async (req, res) => {
     const user = await User.findByPk(req.user.id, {
         attributes: {
             exclude: ['password']
-        }
+        },
+        include: [
+            {
+                model: UserApplicantDetail,
+                as: 'user_applicant_detail',
+                attributes: {
+                    exclude: ['id','user_id', 'createdAt', 'updatedAt']
+                }
+            },
+            {
+                model: UserOrganizationDetail,
+                as: 'user_organization_detail',
+                attributes: {
+                    exclude: ['id','user_id', 'createdAt', 'updatedAt']
+                }
+            }
+        ]
     });
+
+    if (user.user_organization_detail === null) {
+        delete user.dataValues.user_organization_detail
+    } else {
+        delete user.dataValues.user_applicant_detail
+    }
 
     res.status(200).json({
         data: user

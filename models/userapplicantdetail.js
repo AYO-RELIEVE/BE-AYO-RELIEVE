@@ -14,15 +14,9 @@ module.exports = (sequelize, DataTypes) => {
   UserApplicantDetail.init({
     user_id: DataTypes.INTEGER,
     date_of_birth: DataTypes.DATEONLY,
-    religion: DataTypes.STRING,
-    married: DataTypes.BOOLEAN,
-    identity_card: DataTypes.STRING,
+    gender: DataTypes.STRING,
     profession: DataTypes.STRING,
     disability: DataTypes.BOOLEAN,
-    proof_of_disability: DataTypes.STRING,
-    lsm: DataTypes.BOOLEAN,
-    lsm_name: DataTypes.STRING,
-    lsm_membership: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'UserApplicantDetail',
