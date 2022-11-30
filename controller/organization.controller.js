@@ -1,21 +1,21 @@
-const {Program, User} = require("../models")
+const { Program, User } = require("../models")
 
 const listApplicant = async (req, res) => {
     const id = req.params.id;
     const program = await Program.findByPk(id, {
-        include : [{
-            model : User, 
-            as : "applicant", 
-            attributes : {
-                exclude : ["password"]     
-            }, 
-            through : {
-                attributes : ["status"]
+        include: [{
+            model: User,
+            as: "applicant",
+            attributes: {
+                exclude: ["password"]
+            },
+            through: {
+                attributes: ["status"]
             }
         }]
     });
 
-    res.json({
+    res.status(200).json({
         data: program
     })
 }
@@ -23,16 +23,15 @@ const listApplicant = async (req, res) => {
 const listProgram = async (req, res) => {
     console.log("id", req.user.id)
     const programs = await Program.findAll({
-        where : {
-          organization_id : req.user.id  
+        where: {
+            organization_id: req.user.id
         }
-        
     })
 
-    res.json({
+    res.status(200).json({
         data: programs
     })
 }
 
 
-module.exports = {listApplicant, listProgram}
+module.exports = { listApplicant, listProgram }

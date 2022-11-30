@@ -25,6 +25,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       thumbnail: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       qouta: {
