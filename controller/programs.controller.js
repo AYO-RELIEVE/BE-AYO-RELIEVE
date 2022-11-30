@@ -1,6 +1,8 @@
 const Validator = require('fastest-validator');
 const v = new Validator();
-const { Program, ProgramUser } = require("../models");
+const { Program, ProgramUser, User } = require("../models");
+const { unlinkSync } = require("fs");
+const { generateSlug } = require('../utils/helpers');
 
 const index = async (req, res) => {
     const programs = await Program.findAll({});
@@ -30,8 +32,7 @@ const create = async (req, res) => {
         title: "string|empty:false|min:3|max:50",
         description: "string|optional",
         rules: "string",
-        thumbnail: "string|optional:true",
-        qouta: "number",
+        // qouta: "number",
         end_date: "string",
         announcement_date: "string",
     };
@@ -46,6 +47,7 @@ const create = async (req, res) => {
 
     const program = await Program.create({
         organization_id: req.user.id,
+        thumbnail: req.file ? `images/${req.file.filename}` : null,
         ...req.body,
     });
 
@@ -62,8 +64,7 @@ const update = async (req, res) => {
         title: "string|empty:false|min:3|max:50",
         description: "string|optional",
         rules: "string",
-        thumbnail: "string|optional:true",
-        qouta: "number",
+        // qouta: "number",
         end_date: "string",
         announcement_date: "string",
     };
@@ -88,17 +89,24 @@ const update = async (req, res) => {
         });
     }
 
+    if (req.file) {
+        if (program.thumbnail) {
+            const filename = program.thumbnail.split("/")[1];
+            unlinkSync(`public/images/${filename}`);
+        }
+        program.thumbnail = `images/${req.file.filename}`;
+    }
+
     program.title = title;
     program.description = description;
     program.rules = rules;
-    program.thumbnail = thumbnail;
     program.qouta = qouta;
     program.end_date = end_date;
     program.announcement_date = announcement_date;
 
     await program.save();
 
-    res.json({
+    res.status(200).json({
         data: program
     });
 }
@@ -121,7 +129,7 @@ const destroy = async (req, res) => {
 
     await program.destroy();
 
-    res.json({
+    res.status(200).json({
         message: "Program deleted",
     });
 }
@@ -136,7 +144,7 @@ const apply = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(req.user.id);
+    const userApplied = await program.hasApplicant(req.user.id);
 
     if (userApplied) {
         return res.status(400).json({
@@ -144,9 +152,9 @@ const apply = async (req, res) => {
         });
     }
 
-    await program.addProgram_users(req.user.id);
+    await program.addApplicant(req.user.id);
 
-    res.json({
+    res.status(200).json({
         message: "You have successfully applied for this program"
     });
 }
@@ -167,7 +175,7 @@ const approve = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(parseInt(user_id));
+    const userApplied = await program.hasApplicant(parseInt(user_id));
 
     if (!userApplied) {
         return res.status(400).json({
@@ -185,7 +193,7 @@ const approve = async (req, res) => {
     programUsers.status = "Diterima";
     await programUsers.save();
 
-    res.json({
+    res.status(200).json({
         message: "User has been approved for this program"
     });
 }
@@ -206,7 +214,7 @@ const reject = async (req, res) => {
         });
     }
 
-    const userApplied = await program.hasProgram_users(parseInt(user_id));
+    const userApplied = await program.hasApplicant(parseInt(user_id));
 
     if (!userApplied) {
         return res.status(400).json({
@@ -224,9 +232,25 @@ const reject = async (req, res) => {
     programUsers.status = "Ditolak";
     await programUsers.save();
 
-    res.json({
+    res.status(200).json({
         message: "User has been rejected for this program"
     });
 }
 
-module.exports = { index, show, create, update, destroy, apply, approve, reject };
+const myPrograms = async (req, res) => {
+    const userPrograms = await User.findByPk(req.user.id, {
+        include: [{
+            model: Program,
+            as: "program_programs",
+            through: {
+                attributes: ["status"]
+            }
+        }]
+    });
+
+    return res.status(200).json({
+        data: userPrograms.program_programs
+    });
+}
+
+module.exports = { index, show, create, update, destroy, apply, approve, reject, myPrograms };
