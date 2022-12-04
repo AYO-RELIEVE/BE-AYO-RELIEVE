@@ -2,10 +2,16 @@ const Validator = require('fastest-validator');
 const v = new Validator();
 const { Program, ProgramUser, User } = require("../models");
 const { unlinkSync } = require("fs");
-const { generateSlug } = require('../utils/helpers');
+const jwt = require('jsonwebtoken');
 
 const index = async (req, res) => {
-    const programs = await Program.findAll({});
+    const programs = await Program.findAll({
+        include: [{
+            model: User,
+            as: 'organization',
+            attributes: ['id', 'name', 'photo']
+        }]
+    });
 
     return res.status(200).json({
         data: programs
@@ -14,7 +20,57 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
     const { id } = req.params;
-    const program = await Program.findByPk(id);
+    let condition = {
+        include: [{
+            model: User,
+            as: 'organization',
+            attributes: ['id', 'name', 'photo']
+        }]
+    };
+    let token, payload;
+
+    const headerAuthorization = req.headers.authorization;
+
+    if (headerAuthorization && headerAuthorization.startsWith('Bearer')) {
+        token = headerAuthorization.split(' ')[1];
+
+        try {
+            payload = jwt.verify(token, process.env.JWT_SECRET_ACCESS_TOKEN);
+
+            req.user = payload.user;
+        } catch (error) {
+            return res.status(401).json({
+                status: 'error',
+                message: error.message
+            });
+        }
+
+        if (payload) {
+            condition = {
+                include: [
+                    {
+                        model: User,
+                        as: 'organization',
+                        attributes: ['id', 'name', 'photo']
+                    },
+                    {
+                        model: User,
+                        as: 'applicant',
+                        where: {
+                            id: payload.user.id
+                        },
+                        through: {
+                            attributes: ["status"]
+                        },
+                        attributes: ["id", "name", "email"],
+                        required: false
+                    }
+                ]
+            }
+        }
+    }
+
+    const program = await Program.findByPk(id, condition);
 
     if (!program) {
         return res.status(404).json({
@@ -32,7 +88,7 @@ const create = async (req, res) => {
         title: "string|empty:false|min:3|max:50",
         description: "string|optional",
         rules: "string",
-        // qouta: "number",
+        qouta: "number",
         end_date: "string",
         announcement_date: "string",
     };
@@ -64,7 +120,7 @@ const update = async (req, res) => {
         title: "string|empty:false|min:3|max:50",
         description: "string|optional",
         rules: "string",
-        // qouta: "number",
+        qouta: "number",
         end_date: "string",
         announcement_date: "string",
     };
@@ -244,7 +300,12 @@ const myPrograms = async (req, res) => {
             as: "program_programs",
             through: {
                 attributes: ["status"]
-            }
+            },
+            include: [{
+                model: User,
+                as: "organization",
+                attributes: ["id", "name", "photo"]
+            }]
         }]
     });
 

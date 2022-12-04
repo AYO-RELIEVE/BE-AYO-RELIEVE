@@ -19,9 +19,9 @@ const register = async (req, res) => {
 
     if (status === 'applicant') {
         schema.date_of_birth = 'string|empty:false'
-        schema.gender = { type: 'enum', required: true, values: ['Pria', 'Perempuan'] },
-            schema.profession = 'string|empty:false'
-        schema.disability = 'boolean|empty:false'
+        schema.gender = { type: 'enum', required: true, values: ['Pria', 'Perempuan'] }
+        schema.profession = 'string|empty:false'
+        // schema.disability = 'boolean|empty:false'
     }
 
     if (status === 'organization') {
@@ -57,7 +57,7 @@ const register = async (req, res) => {
         address,
         phone_number,
         status,
-        photo
+        photo: req.file ? `images/${req.file.filename}` : null,
     });
 
     if (status === 'applicant') {
@@ -149,14 +149,14 @@ const loggedUser = async (req, res) => {
                 model: UserApplicantDetail,
                 as: 'user_applicant_detail',
                 attributes: {
-                    exclude: ['id','user_id', 'createdAt', 'updatedAt']
+                    exclude: ['id', 'user_id', 'createdAt', 'updatedAt']
                 }
             },
             {
                 model: UserOrganizationDetail,
                 as: 'user_organization_detail',
                 attributes: {
-                    exclude: ['id','user_id', 'createdAt', 'updatedAt']
+                    exclude: ['id', 'user_id', 'createdAt', 'updatedAt']
                 }
             }
         ]
