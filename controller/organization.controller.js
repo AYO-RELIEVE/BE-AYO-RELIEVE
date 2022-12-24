@@ -1,4 +1,4 @@
-const { Program, User } = require("../models")
+const { Program, User, UserApplicantDetail } = require("../models")
 
 const listApplicant = async (req, res) => {
     const id = req.params.id;
@@ -17,7 +17,17 @@ const listApplicant = async (req, res) => {
                 },
                 through: {
                     attributes: ["status"]
-                }
+                },
+                include: [
+                    {
+                        model: UserApplicantDetail,
+                        as: 'user_applicant_detail',
+                        attributes: {
+                            exclude: ['id', 'user_id', 'createdAt', 'updatedAt']
+                        }
+
+                    }
+                ]
             }
         ]
     });
